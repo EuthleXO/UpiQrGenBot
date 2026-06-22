@@ -14,10 +14,10 @@
     { "source": "/", "destination": "/api/webhook.py" }
   ],
   "env": {
-    "BOT_TOKEN": "@bot_token",
-    "BOT_USERNAME": "@bot_username",
-    "ADMIN_IDS": "@admin_ids",
-    "STORAGE_BACKEND": "@storage_backend",
-    "REDIS_URL": "@redis_url"
+    "BOT_TOKEN": "",
+    "BOT_USERNAME": "",
+    "ADMIN_IDS": "",
+    "STORAGE_BACKEND": "",
+    "REDIS_URL": ""
   }
 }
