@@ -22,7 +22,9 @@ ADMIN_IDS = [
 # FORCE_SUB_CHANNELS = [
 #     {"id": -1001234567890, "link": "https://t.me/yourchannel1", "name": "Channel 1"},
 # ]
-FORCE_SUB_CHANNELS = []
+FORCE_SUB_CHANNELS = [
+    {"id": -1003927538921, "link": "https://t.me/EuthGram", "name": "EuthGram"},
+]
 
 # ─── Storage backend ─────────────────────────────────────────────────────────
 # "memory"  -> in-process dict, fine for local dev, NOT persistent on Vercel
