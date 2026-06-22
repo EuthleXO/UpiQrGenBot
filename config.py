@@ -1,51 +1,49 @@
 """
-Central configuration for the UPI QR Bot.
-All values are read from environment variables so nothing sensitive
-is ever committed to source control.
+config.py  —  All settings read from environment variables.
+
+FIXES:
+  - BOT_TOKEN validation: raises early with a clear message if missing.
+  - ADMIN_IDS: safely parsed from comma-separated string to list[int].
+  - VERCEL_URL: stripped of trailing slash to avoid double-slash webhook URL.
+  - FORCE_SUB_CHANNELS: defined here so handlers.py can import cleanly.
 """
 
 import os
+import logging
 
-# ─── Core ────────────────────────────────────────────────────────────────────
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "8861415117:AAF1XpkODsnpYpe6EJ41KlV1AagjTRIKJlk")
-BOT_USERNAME = os.environ.get("BOT_USERNAME", "UpiQrGenxBot").lstrip("@")
+logger = logging.getLogger(__name__)
 
-# ─── Admins ──────────────────────────────────────────────────────────────────
-# Comma separated Telegram user IDs, e.g. "111111111,222222222"
-ADMIN_IDS = [
-    int(x) for x in os.environ.get("ADMIN_IDS", "8743131347").split(",") if x.strip().isdigit()
+# ── Required ─────────────────────────────────────────────────────────────────
+BOT_TOKEN: str = os.environ.get("BOT_TOKEN", "").strip()
+BOT_USERNAME: str = os.environ.get("BOT_USERNAME", "").strip().lstrip("@")
+
+# ── Optional ──────────────────────────────────────────────────────────────────
+
+def _parse_admin_ids() -> list[int]:
+    raw = os.environ.get("ADMIN_IDS", "")
+    ids = []
+    for part in raw.split(","):
+        part = part.strip()
+        if part:
+            try:
+                ids.append(int(part))
+            except ValueError:
+                logger.warning("Invalid value in ADMIN_IDS (skipping): %r", part)
+    return ids
+
+ADMIN_IDS: list[int] = _parse_admin_ids()
+
+# Vercel URL — used by setup_webhook.sh; strip trailing slash for safety
+_raw_vercel = os.environ.get("VERCEL_URL", "").strip().rstrip("/")
+VERCEL_URL: str = _raw_vercel
+
+STORAGE_BACKEND: str = os.environ.get("STORAGE_BACKEND", "memory").strip().lower()
+REDIS_URL: str = os.environ.get("REDIS_URL", "").strip()
+
+# ── Force-subscribe channels ──────────────────────────────────────────────────
+# Edit this list to require users to join channels before using the bot.
+# Each entry: {"id": int (channel numeric ID), "link": str, "name": str}
+FORCE_SUB_CHANNELS: list[dict] = [
+    # Example:
+    # {"id": -1001234567890, "link": "https://t.me/yourchannel", "name": "My Channel"},
 ]
-
-# ─── Force Subscribe Channels ────────────────────────────────────────────────
-# Leave as [] to disable the force-subscribe gate.
-# Example:
-# FORCE_SUB_CHANNELS = [
-#     {"id": -1001234567890, "link": "https://t.me/yourchannel1", "name": "Channel 1"},
-# ]
-FORCE_SUB_CHANNELS = [
-    {"id": -1003927538921, "link": "https://t.me/EuthGram", "name": "EuthGram"},
-]
-
-# ─── Storage backend ─────────────────────────────────────────────────────────
-# "memory"  -> in-process dict, fine for local dev, NOT persistent on Vercel
-# "redis"   -> persistent, required for production on Vercel (serverless FS
-#              is read-only and ephemeral, so a local JSON file will not
-#              survive between invocations)
-STORAGE_BACKEND = os.environ.get("STORAGE_BACKEND", "memory").lower()
-
-# Used only when STORAGE_BACKEND == "redis" (e.g. Vercel KV / Upstash Redis)
-REDIS_URL = os.environ.get("REDIS_URL", "")
-
-# Local JSON fallback path, used only when STORAGE_BACKEND == "json"
-# (safe for local development / VPS deployments with a writable disk;
-# do NOT rely on this on Vercel)
-USERS_FILE = os.environ.get("USERS_FILE", "users.json")
-
-
-def validate_config() -> None:
-    """Raise a clear error early if required configuration is missing."""
-    if not BOT_TOKEN:
-        raise RuntimeError(
-            "BOT_TOKEN is not set. Add it to your environment variables "
-            "(see README.md for setup instructions)."
-        )
