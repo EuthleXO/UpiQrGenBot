@@ -7,13 +7,13 @@ is ever committed to source control.
 import os
 
 # ─── Core ────────────────────────────────────────────────────────────────────
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
-BOT_USERNAME = os.environ.get("BOT_USERNAME", "UpiQrGenBot").lstrip("@")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8861415117:AAF1XpkODsnpYpe6EJ41KlV1AagjTRIKJlk")
+BOT_USERNAME = os.environ.get("BOT_USERNAME", "UpiQrGenxBot").lstrip("@")
 
 # ─── Admins ──────────────────────────────────────────────────────────────────
 # Comma separated Telegram user IDs, e.g. "111111111,222222222"
 ADMIN_IDS = [
-    int(x) for x in os.environ.get("ADMIN_IDS", "").split(",") if x.strip().isdigit()
+    int(x) for x in os.environ.get("ADMIN_IDS", "8743131347").split(",") if x.strip().isdigit()
 ]
 
 # ─── Force Subscribe Channels ────────────────────────────────────────────────
