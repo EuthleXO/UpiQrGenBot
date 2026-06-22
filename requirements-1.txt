@@ -1,0 +1,9 @@
+python-telegram-bot==20.7
+qrcode[pil]==7.4.2
+Pillow==10.4.0
+flask==3.0.3
+requests==2.32.3
+
+# Optional: only required if STORAGE_BACKEND=redis (recommended for
+# production deployments on Vercel — see README.md)
+redis==5.0.8
