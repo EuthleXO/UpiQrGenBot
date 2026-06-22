@@ -5,19 +5,19 @@
       "src": "api/webhook.py",
       "use": "@vercel/python",
       "config": {
+        "maxLambdaSize": "50mb",
         "includeFiles": "fonts/**"
       }
     }
   ],
-  "rewrites": [
-    { "source": "/webhook", "destination": "/api/webhook.py" },
-    { "source": "/", "destination": "/api/webhook.py" }
-  ],
-  "env": {
-    "BOT_TOKEN": "",
-    "BOT_USERNAME": "",
-    "ADMIN_IDS": "",
-    "STORAGE_BACKEND": "",
-    "REDIS_URL": ""
-  }
+  "routes": [
+    {
+      "src": "/api/webhook",
+      "dest": "api/webhook.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "api/webhook.py"
+    }
+  ]
 }
